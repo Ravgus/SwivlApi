@@ -1,0 +1,39 @@
+version: '3'
+services:
+    swivl_nginx:
+        container_name: swivl_nginx
+        image: nginx:latest
+        ports:
+          - 4080:80
+          - 4043:443
+        volumes:
+          - .:/var/www/html
+          - .docker/nginx/nginx.conf:/etc/nginx/nginx.conf
+        depends_on:
+            - swivl_php
+
+    swivl_php:
+        build:
+            context: .docker/php
+            dockerfile: Dockerfile
+            args:
+                - USER_NAME=${USER_NAME}
+                - GROUP_NAME=${GROUP_NAME}
+        container_name: swivl_php
+        volumes:
+          - .:/var/www/html/
+
+    swivl_mysql:
+        image: mysql:5.7
+        command: "--default-authentication-plugin=mysql_native_password"
+        working_dir: /var/opt/mysql
+        container_name: swivl_mysql
+        volumes:
+            - .docker/mysql/db:/var/lib/mysql
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: swivl_db
+            MYSQL_USER: sf4
+            MYSQL_PASSWORD: sf4
+        ports:
+            - 4006:3306
