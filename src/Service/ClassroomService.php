@@ -28,12 +28,12 @@ class ClassroomService extends BaseService
     }
 
     /**
-     * @param Classroom $classroom
-     * @param array     $data
+     * @param Classroom  $classroom
+     * @param array|null $data
      *
      * @return Classroom|array
      */
-    public function updateClassroom(Classroom $classroom, array $data)
+    public function updateClassroom(Classroom $classroom, ?array $data)
     {
         $classroom->setIsActive($data['isActive'] ?? null);
         $classroom->setName($data['name'] ?? null);
@@ -46,11 +46,11 @@ class ClassroomService extends BaseService
     }
 
     /**
-     * @param array $data
+     * @param array|null $data
      *
      * @return Classroom|array
      */
-    public function createClassroom(array $data)
+    public function createClassroom(?array $data)
     {
         $classroom = new Classroom();
 

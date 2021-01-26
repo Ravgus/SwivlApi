@@ -1,10 +1,12 @@
 <?php
 
+
 namespace App\Entity;
 
 use App\Repository\ClassroomRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity(repositoryClass=ClassroomRepository::class)
@@ -127,10 +129,10 @@ class Classroom implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'id' => $this->getId(),
-            'createdAt' => $this->getCreatedAt(),
-            'isActive' => $this->getIsActive(),
-            'name' => $this->getName()
+            'id'        => $this->getId(),
+            'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
+            'isActive'  => $this->getIsActive(),
+            'name'      => $this->getName(),
         ];
     }
 }
