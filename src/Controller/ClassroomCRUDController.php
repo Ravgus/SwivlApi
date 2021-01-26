@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Controller;
 
 use App\Entity\Classroom;
@@ -48,11 +49,20 @@ class ClassroomCRUDController extends AbstractController
         ClassroomRepository $classroomRepository,
         ClassroomService $classroomService,
         EntityManagerInterface $entityManager
-    )
-    {
+    ) {
         $this->classroomRepository = $classroomRepository;
         $this->entityManager = $entityManager;
         $this->classroomService = $classroomService;
+    }
+
+    /**
+     * @Route("/show/all", name="classroom_show", methods="GET")
+     *
+     * @return JsonResponse
+     */
+    public function showClassrooms(): JsonResponse
+    {
+        return $this->json($this->classroomRepository->findAll());
     }
 
     /**
@@ -68,17 +78,7 @@ class ClassroomCRUDController extends AbstractController
     }
 
     /**
-     * @Route("/show", name="classroom_show", methods="GET")
-     *
-     * @return JsonResponse
-     */
-    public function showClassrooms(): JsonResponse
-    {
-        return $this->json($this->classroomRepository->findAll());
-    }
-
-    /**
-     * @Route("/creaete", name="classroom_create", methods="POST")
+     * @Route("/create", name="classroom_create", methods="POST")
      *
      * @param Request $request
      *
@@ -86,15 +86,19 @@ class ClassroomCRUDController extends AbstractController
      */
     public function createClassroom(Request $request): JsonResponse
     {
-        try {
-            $result = $this->classroomService->createClassroom($request->request->all());
-            $code = Response::HTTP_CREATED;
-        } catch (\Exception $exception) {
-            $result = $exception->getMessage();
-            $code = Response::HTTP_BAD_REQUEST;
+        $content = json_decode($request->getContent(), true);
+        $result = $this->classroomService->createClassroom($content);
+
+        if (!$result instanceof Classroom) {
+            return $this->json([
+                'errors' => $result,
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json($result, $code);
+        $this->entityManager->persist($result);
+        $this->entityManager->flush();
+
+        return $this->json($result, Response::HTTP_CREATED);
     }
 
     /**
@@ -122,14 +126,19 @@ class ClassroomCRUDController extends AbstractController
      */
     public function updateClassroom(Request $request, Classroom $classroom): JsonResponse
     {
-        try {
-            $result = $this->classroomService->updateClassroom($classroom, $request->request->all());
-            $code = Response::HTTP_OK;
-        } catch (\Exception $exception) {
-            $result = $exception->getMessage();
-            $code = Response::HTTP_BAD_REQUEST;
+        $content = json_decode($request->getContent(), true);
+        $result = $this->classroomService->updateClassroom($classroom, $content);
+
+        if (!$result instanceof Classroom) {
+            return $this->json([
+                'errors' => $result,
+            ], Response::HTTP_BAD_REQUEST);
         }
 
-        return $this->json($result, $code);
+        $this->entityManager->flush();
+
+        return $this->json($result);
     }
+
+
 }

@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass=ClassroomRepository::class)
  */
-class Classroom
+class Classroom implements \JsonSerializable
 {
     /**
      * @ORM\Id
@@ -36,21 +36,21 @@ class Classroom
      * @Assert\DateTime()
      * @ORM\Column(type="datetime")
      */
-    private ?\DateTimeInterface $created_at;
+    private ?\DateTimeInterface $createdAt;
 
     /**
      * @Assert\NotBlank()
      * @Assert\Type("bool")
      * @ORM\Column(type="boolean")
      */
-    private ?bool $is_active;
+    private ?bool $isActive;
 
     /**
      * Classroom constructor.
      */
     public function __construct()
     {
-        $this->created_at = new \DateTime();
+        $this->createdAt = new \DateTime();
     }
 
     /**
@@ -86,17 +86,17 @@ class Classroom
      */
     public function getCreatedAt(): ?\DateTimeInterface
     {
-        return $this->created_at;
+        return $this->createdAt;
     }
 
     /**
-     * @param \DateTimeInterface|null $created_at
+     * @param \DateTimeInterface|null $createdAt
      *
      * @return $this
      */
-    public function setCreatedAt(?\DateTimeInterface $created_at): self
+    public function setCreatedAt(?\DateTimeInterface $createdAt): self
     {
-        $this->created_at = $created_at;
+        $this->createdAt = $createdAt;
 
         return $this;
     }
@@ -106,18 +106,31 @@ class Classroom
      */
     public function getIsActive(): ?bool
     {
-        return $this->is_active;
+        return $this->isActive;
     }
 
     /**
-     * @param bool|null $is_active
+     * @param bool|null $isActive
      *
      * @return $this
      */
-    public function setIsActive(?bool $is_active): self
+    public function setIsActive(?bool $isActive): self
     {
-        $this->is_active = $is_active;
+        $this->isActive = $isActive;
 
         return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function jsonSerialize(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'createdAt' => $this->getCreatedAt(),
+            'isActive' => $this->getIsActive(),
+            'name' => $this->getName()
+        ];
     }
 }

@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 /**
  * Class ClassroomService
  */
-class ClassroomService
+class ClassroomService extends BaseService
 {
     /**
      * @var ValidatorInterface
@@ -31,15 +31,16 @@ class ClassroomService
      * @param Classroom $classroom
      * @param array     $data
      *
-     * @return Classroom
-     * @throws \Exception
+     * @return Classroom|array
      */
-    public function updateClassroom(Classroom $classroom, array $data): Classroom
+    public function updateClassroom(Classroom $classroom, array $data)
     {
         $classroom->setIsActive($data['isActive'] ?? null);
         $classroom->setName($data['name'] ?? null);
 
-        $this->validate($classroom);
+        if (!$this->validate($classroom)) {
+            return $this->getErrors();
+        }
 
         return $classroom;
     }
@@ -47,10 +48,9 @@ class ClassroomService
     /**
      * @param array $data
      *
-     * @return Classroom
-     * @throws \Exception
+     * @return Classroom|array
      */
-    public function createClassroom(array $data): Classroom
+    public function createClassroom(array $data)
     {
         $classroom = new Classroom();
 
@@ -59,15 +59,21 @@ class ClassroomService
 
     /**
      * @param $entity
+     *
+     * @return bool
      */
-    protected function validate($entity): void
+    protected function validate($entity): bool
     {
         $violations = $this->validator->validate($entity);
 
         if (0 !== count($violations)) {
             foreach ($violations as $violation) {
-                throw new Exception("'{$violation->getPropertyPath()}' - {$violation->getMessage()}");
+                $this->addError("'{$violation->getPropertyPath()}' - {$violation->getMessage()}");
             }
+
+            return false;
         }
+
+        return true;
     }
 }
