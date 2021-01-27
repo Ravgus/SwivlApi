@@ -5,11 +5,13 @@ namespace App\Entity;
 
 use App\Repository\ClassroomRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
 /**
  * @ORM\Entity(repositoryClass=ClassroomRepository::class)
+ * @UniqueEntity("name")
  */
 class Classroom implements \JsonSerializable
 {
@@ -29,7 +31,7 @@ class Classroom implements \JsonSerializable
      *      minMessage = "Your name must be at least {{ limit }} characters long",
      *      maxMessage = "Your name cannot be longer than {{ limit }} characters"
      * )
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, unique=true)
      */
     private ?string $name;
 
@@ -41,7 +43,7 @@ class Classroom implements \JsonSerializable
     private ?\DateTimeInterface $createdAt;
 
     /**
-     * @Assert\NotBlank()
+     * @Assert\NotNull()
      * @Assert\Type("bool")
      * @ORM\Column(type="boolean")
      */

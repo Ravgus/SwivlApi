@@ -139,6 +139,4 @@ class ClassroomCRUDController extends AbstractController
 
         return $this->json($result);
     }
-
-
 }
